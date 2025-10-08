@@ -388,3 +388,72 @@ public static class Validator
     }
 }
 
+class Program
+{
+    private static Library library = new Library();
+    private static ShoppingCart cart = new ShoppingCart();
+
+    static void Main(string[] args)
+    {
+        Console.WriteLine("=== СИСТЕМА УЧЕТА БИБЛИОТЕКИ ===");
+        ShowMainMenu();
+    }
+
+    static void ShowMainMenu()
+    {
+        while (true)
+        {
+            Console.WriteLine("\n=== ГЛАВНОЕ МЕНЮ ===");
+            Console.WriteLine("1. Добавить книгу");
+            Console.WriteLine("2. Удалить книгу");
+            Console.WriteLine("3. Найти книги");
+            Console.WriteLine("4. Сортировать книги");
+            Console.WriteLine("5. Самая дорогая/дешевая книга");
+            Console.WriteLine("6. Группировка по авторам");
+            Console.WriteLine("7. Показать все книги");
+            Console.WriteLine("8. Пакетный импорт книг");
+            Console.WriteLine("9. Корзина");
+            Console.WriteLine("0. Выход");
+
+            Console.Write("Выберите действие: ");
+            var choice = Console.ReadLine();
+
+            switch (choice)
+            {
+                case "1":
+                    AddBookMenu();
+                    break;
+                case "2":
+                    RemoveBookMenu();
+                    break;
+                case "3":
+                    FindBooksMenu();
+                    break;
+                case "4":
+                    SortBooksMenu();
+                    break;
+                case "5":
+                    ShowPriceExtremes();
+                    break;
+                case "6":
+                    library.GroupBooksByAuthors();
+                    break;
+                case "7":
+                    library.DisplayAllBooks();
+                    break;
+                case "8":
+                    ImportBooksMenu();
+                    break;
+                case "9":
+                    ShoppingCartMenu();
+                    break;
+                case "0":
+                    Console.WriteLine("До свидания!");
+                    return;
+                default:
+                    Console.WriteLine("Неверный выбор. Попробуйте снова.");
+                    break;
+            }
+        }
+    }
+
