@@ -304,3 +304,66 @@ public class Library
     }
 }
 
+public static class UserInput
+{
+    public static string GetStringInput(string prompt)
+    {
+        Console.Write(prompt);
+        var input = Console.ReadLine()?.Trim();
+        while (string.IsNullOrEmpty(input))
+        {
+            Console.WriteLine("Ошибка: Поле не может быть пустым");
+            Console.Write(prompt);
+            input = Console.ReadLine()?.Trim();
+        }
+        return input;
+    }
+
+    public static int GetIntInput(string prompt)
+    {
+        while (true)
+        {
+            Console.Write(prompt);
+            if (int.TryParse(Console.ReadLine(), out int result) && result > 0)
+            {
+                return result;
+            }
+            Console.WriteLine("Ошибка: Введите корректное положительное число");
+        }
+    }
+
+    public static decimal GetDecimalInput(string prompt)
+    {
+        while (true)
+        {
+            Console.Write(prompt);
+            if (decimal.TryParse(Console.ReadLine(), out decimal result) && result >= 0)
+            {
+                return result;
+            }
+            Console.WriteLine("Ошибка: Введите корректную неотрицательную цену");
+        }
+    }
+
+    public static Genre GetGenreInput(string prompt)
+    {
+        Console.WriteLine(prompt);
+        Console.WriteLine("Доступные жанры:");
+        var genres = Enum.GetValues(typeof(Genre));
+        for (int i = 0; i < genres.Length; i++)
+        {
+            Console.WriteLine($"{i + 1}. {genres.GetValue(i)}");
+        }
+
+        while (true)
+        {
+            Console.Write("Выберите номер жанра: ");
+            if (int.TryParse(Console.ReadLine(), out int choice) && choice >= 1 && choice <= genres.Length)
+            {
+                return (Genre)(choice - 1);
+            }
+            Console.WriteLine("Ошибка: Введите корректный номер жанра");
+        }
+    }
+}
+
