@@ -457,3 +457,207 @@ class Program
         }
     }
 
+    static void AddBookMenu()
+    {
+        Console.WriteLine("\n=== ДОБАВЛЕНИЕ КНИГИ ===");
+
+        var title = UserInput.GetStringInput("Введите название книги: ");
+        var author = UserInput.GetStringInput("Введите автора: ");
+        var genre = UserInput.GetGenreInput("Выберите жанр:");
+        var year = UserInput.GetIntInput("Введите год издания: ");
+        var price = UserInput.GetDecimalInput("Введите цену: ");
+
+        library.AddBook(title, author, genre, year, price);
+    }
+
+    static void RemoveBookMenu()
+    {
+        Console.WriteLine("\n=== УДАЛЕНИЕ КНИГИ ===");
+        var id = UserInput.GetIntInput("Введите ID книги для удаления: ");
+        library.RemoveBook(id);
+    }
+
+    static void FindBooksMenu()
+    {
+        Console.WriteLine("\n=== ПОИСК КНИГ ===");
+        Console.WriteLine("1. По названию");
+        Console.WriteLine("2. По автору");
+        Console.WriteLine("3. По жанру");
+
+        var choice = Console.ReadLine();
+        List<Book> foundBooks = new List<Book>();
+
+        switch (choice)
+        {
+            case "1":
+                var title = UserInput.GetStringInput("Введите название для поиска: ");
+                foundBooks = library.FindBooksByTitle(title);
+                break;
+            case "2":
+                var author = UserInput.GetStringInput("Введите автора для поиска: ");
+                foundBooks = library.FindBooksByAuthor(author);
+                break;
+            case "3":
+                var genre = UserInput.GetGenreInput("Выберите жанр для поиска:");
+                foundBooks = library.FindBooksByGenre(genre);
+                break;
+            default:
+                Console.WriteLine("Неверный выбор");
+                return;
+        }
+
+        DisplayBooksList(foundBooks, "НАЙДЕННЫЕ КНИГИ");
+    }
+
+    static void SortBooksMenu()
+    {
+        Console.WriteLine("\n=== СОРТИРОВКА КНИГ ===");
+        Console.WriteLine("1. По названию");
+        Console.WriteLine("2. По году издания");
+
+        var choice = Console.ReadLine();
+        List<Book> sortedBooks = new List<Book>();
+
+        switch (choice)
+        {
+            case "1":
+                sortedBooks = library.SortBooksByTitle();
+                DisplayBooksList(sortedBooks, "КНИГИ ОТСОРТИРОВАННЫЕ ПО НАЗВАНИЮ");
+                break;
+            case "2":
+                sortedBooks = library.SortBooksByYear();
+                DisplayBooksList(sortedBooks, "КНИГИ ОТСОРТИРОВАННЫЕ ПО ГОДУ");
+                break;
+            default:
+                Console.WriteLine("Неверный выбор");
+                break;
+        }
+    }
+
+    static void ShowPriceExtremes()
+    {
+        Console.WriteLine("\n=== САМАЯ ДОРОГАЯ И ДЕШЕВАЯ КНИГИ ===");
+
+        var mostExpensive = library.GetMostExpensiveBook();
+        var cheapest = library.GetCheapestBook();
+
+        if (mostExpensive != null)
+        {
+            Console.WriteLine($"Самая дорогая книга: {mostExpensive}");
+        }
+        else
+        {
+            Console.WriteLine("В библиотеке нет книг");
+        }
+
+        if (cheapest != null)
+        {
+            Console.WriteLine($"Самая дешевая книга: {cheapest}");
+        }
+        else
+        {
+            Console.WriteLine("В библиотеке нет книг");
+        }
+    }
+
+    static void ImportBooksMenu()
+    {
+        Console.WriteLine("\n=== ПАКЕТНЫЙ ИМПОРТ КНИГ ===");
+        Console.WriteLine("Введите книги в формате: Название;Автор;Жанр;Год;Цена");
+        Console.WriteLine("Каждая книга на новой строке. Для завершения введите пустую строку:");
+
+        string? input;
+        var booksData = new System.Text.StringBuilder();
+
+        while (!string.IsNullOrWhiteSpace(input = Console.ReadLine()))
+        {
+            booksData.AppendLine(input);
+        }
+
+        if (booksData.Length > 0)
+        {
+            library.ImportBooks(booksData.ToString());
+        }
+    }
+
+    static void ShoppingCartMenu()
+    {
+        while (true)
+        {
+            Console.WriteLine("\n=== КОРЗИНА ===");
+            Console.WriteLine("1. Показать корзину");
+            Console.WriteLine("2. Добавить книгу в корзину");
+            Console.WriteLine("3. Удалить книгу из корзины");
+            Console.WriteLine("4. Очистить корзину");
+            Console.WriteLine("5. Рассчитать общую стоимость");
+            Console.WriteLine("0. Назад");
+
+            var choice = Console.ReadLine();
+
+            switch (choice)
+            {
+                case "1":
+                    cart.DisplayCart();
+                    break;
+                case "2":
+                    AddToCartMenu();
+                    break;
+                case "3":
+                    RemoveFromCartMenu();
+                    break;
+                case "4":
+                    cart.ClearCart();
+                    Console.WriteLine("Корзина очищена");
+                    break;
+                case "5":
+                    Console.WriteLine($"Общая стоимость корзины: {cart.CalculateTotalPrice():C}");
+                    break;
+                case "0":
+                    return;
+                default:
+                    Console.WriteLine("Неверный выбор");
+                    break;
+            }
+        }
+    }
+
+    static void AddToCartMenu()
+    {
+        Console.WriteLine("\n=== ДОБАВЛЕНИЕ В КОРЗИНУ ===");
+        library.DisplayAllBooks();
+        var id = UserInput.GetIntInput("Введите ID книги для добавления в корзину: ");
+
+        var book = library.GetBookById(id);
+        if (book != null)
+        {
+            cart.AddToCart(book);
+        }
+        else
+        {
+            Console.WriteLine("Книга с указанным ID не найдена");
+        }
+    }
+
+    static void RemoveFromCartMenu()
+    {
+        Console.WriteLine("\n=== УДАЛЕНИЕ ИЗ КОРЗИНЫ ===");
+        cart.DisplayCart();
+        var id = UserInput.GetIntInput("Введите ID книги для удаления из корзины: ");
+        cart.RemoveFromCart(id);
+    }
+
+    static void DisplayBooksList(List<Book> books, string title)
+    {
+        if (!books.Any())
+        {
+            Console.WriteLine("Книги не найдены");
+            return;
+        }
+
+        Console.WriteLine($"\n=== {title} ===");
+        foreach (var book in books)
+        {
+            Console.WriteLine(book);
+        }
+    }
+}
