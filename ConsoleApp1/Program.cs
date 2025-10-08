@@ -367,3 +367,24 @@ public static class UserInput
     }
 }
 
+public static class Validator
+{
+    public static bool ValidateBookData(string title, string author, int year, decimal price)
+    {
+        return !string.IsNullOrWhiteSpace(title) &&
+        !string.IsNullOrWhiteSpace(author) &&
+        ValidateYear(year) &&
+        ValidatePrice(price);
+    }
+
+    public static bool ValidatePrice(decimal price)
+    {
+        return price >= 0;
+    }
+
+    public static bool ValidateYear(int year)
+    {
+        return year > 0 && year <= DateTime.Now.Year;
+    }
+}
+
