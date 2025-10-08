@@ -70,3 +70,59 @@ public class Book
         return $"ID: {Id}, Название: {Title}, Автор: {Author}, Жанр: {Genre}, Год: {Year}, Цена: {Price:C}";
     }
 }
+
+public class ShoppingCart
+{
+    private List<Book> books;
+
+    public ShoppingCart()
+    {
+        books = new List<Book>();
+    }
+
+    public void AddToCart(Book book)
+    {
+        books.Add(book);
+        Console.WriteLine($"Книга '{book.Title}' добавлена в корзину");
+    }
+
+    public void RemoveFromCart(int bookId)
+    {
+        var book = books.FirstOrDefault(b => b.Id == bookId);
+        if (book != null)
+        {
+            books.Remove(book);
+            Console.WriteLine($"Книга '{book.Title}' удалена из корзины");
+        }
+        else
+        {
+            Console.WriteLine("Книга с указанным ID не найдена в корзине");
+        }
+    }
+
+    public decimal CalculateTotalPrice()
+    {
+        return books.Sum(book => book.Price);
+    }
+
+    public void DisplayCart()
+    {
+        if (!books.Any())
+        {
+            Console.WriteLine("Корзина пуста");
+            return;
+        }
+
+        Console.WriteLine("\n=== КОРЗИНА ===");
+        foreach (var book in books)
+        {
+            Console.WriteLine(book);
+        }
+        Console.WriteLine($"Общая стоимость: {CalculateTotalPrice():C}");
+    }
+
+    public void ClearCart()
+    {
+        books.Clear();
+    }
+}
