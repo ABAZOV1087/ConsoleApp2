@@ -126,3 +126,181 @@ public class ShoppingCart
         books.Clear();
     }
 }
+
+public class Library
+{
+    private List<Book> books;
+    private int nextId;
+
+    public Library()
+    {
+        books = new List<Book>();
+        nextId = 1;
+        InitializeTestData();
+    }
+
+    private void InitializeTestData()
+    {
+        AddBook("Война и мир", "Лев Толстой", Genre.Fiction, 1869, 1200m);
+        AddBook("1984", "Джордж Оруэлл", Genre.Fiction, 1949, 800m);
+        AddBook("Краткая история времени", "Стивен Хокинг", Genre.Science, 1988, 950m);
+        AddBook("Властелин колец", "Дж. Р. Р. Толкин", Genre.Fantasy, 1954, 1500m);
+        AddBook("Убийство в Восточном экспрессе", "Агата Кристи", Genre.Mystery, 1934, 700m);
+    }
+
+    public void AddBook(string title, string author, Genre genre, int year, decimal price)
+    {
+        if (!Validator.ValidateBookData(title, author, year, price))
+        {
+            Console.WriteLine("Ошибка: Некорректные данные книги");
+            return;
+        }
+
+        var book = new Book
+        {
+            Id = nextId++,
+            Title = title.Trim(),
+            Author = author.Trim(),
+            Genre = genre,
+            Year = year,
+            Price = price
+        };
+
+        books.Add(book);
+        Console.WriteLine($"Книга '{title}' успешно добавлена с ID: {book.Id}");
+    }
+
+    public void RemoveBook(int id)
+    {
+        var book = books.FirstOrDefault(b => b.Id == id);
+        if (book != null)
+        {
+            books.Remove(book);
+            Console.WriteLine($"Книга '{book.Title}' удалена из библиотеки");
+        }
+        else
+        {
+            Console.WriteLine("Книга с указанным ID не найдена");
+        }
+    }
+
+    public List<Book> FindBooksByTitle(string title)
+    {
+        return books.Where(b => b.Title.ToLower().Contains(title.ToLower())).ToList();
+    }
+
+    public List<Book> FindBooksByAuthor(string author)
+    {
+        return books.Where(b => b.Author.ToLower().Contains(author.ToLower())).ToList();
+    }
+
+    public List<Book> FindBooksByGenre(Genre genre)
+    {
+        return books.Where(b => b.Genre == genre).ToList();
+    }
+
+    public List<Book> SortBooksByTitle()
+    {
+        return books.OrderBy(b => b.Title).ToList();
+    }
+
+    public List<Book> SortBooksByYear()
+    {
+        return books.OrderBy(b => b.Year).ToList();
+    }
+
+    public Book? GetMostExpensiveBook()
+    {
+        return books.OrderByDescending(b => b.Price).FirstOrDefault();
+    }
+
+    public Book? GetCheapestBook()
+    {
+        return books.OrderBy(b => b.Price).FirstOrDefault();
+    }
+
+    public void GroupBooksByAuthors()
+    {
+        var groupedBooks = books.GroupBy(b => b.Author)
+        .OrderBy(g => g.Key);
+
+        Console.WriteLine("\n=== КНИГИ ПО АВТОРАМ ===");
+        foreach (var group in groupedBooks)
+        {
+            Console.WriteLine($"Автор: {group.Key}, Количество книг: {group.Count()}");
+            foreach (var book in group)
+            {
+                Console.WriteLine($" - {book.Title} ({book.Year})");
+            }
+        }
+    }
+
+    public void ImportBooks(string booksData)
+    {
+        var lines = booksData.Split(new[] { '\n' }, StringSplitOptions.RemoveEmptyEntries);
+        int importedCount = 0;
+
+        foreach (var line in lines)
+        {
+            var parts = line.Split(';');
+            if (parts.Length == 5)
+            {
+                try
+                {
+                    var title = parts[0].Trim();
+                    var author = parts[1].Trim();
+                    var genre = ParseGenre(parts[2].Trim());
+                    var year = int.Parse(parts[3].Trim());
+                    var price = decimal.Parse(parts[4].Trim());
+
+                    if (Validator.ValidateBookData(title, author, year, price))
+                    {
+                        AddBook(title, author, genre, year, price);
+                        importedCount++;
+                    }
+                }
+                catch
+                {
+                    Console.WriteLine($"Ошибка при обработке строки: {line}");
+                }
+            }
+        }
+
+        Console.WriteLine($"Импортировано книг: {importedCount}");
+    }
+
+    private Genre ParseGenre(string genreStr)
+    {
+        if (Enum.TryParse(genreStr, true, out Genre genre))
+        {
+            return genre;
+        }
+        return Genre.Fiction; 
+    }
+
+    public void DisplayAllBooks()
+    {
+        if (!books.Any())
+        {
+            Console.WriteLine("Библиотека пуста");
+            return;
+        }
+
+        Console.WriteLine("\n=== ВСЕ КНИГИ В БИБЛИОТЕКЕ ===");
+        foreach (var book in books)
+        {
+            Console.WriteLine(book);
+        }
+    }
+
+    public Book? GetBookById(int id)
+    {
+        return books.FirstOrDefault(b => b.Id == id);
+    }
+
+    public List<Book> GetAllBooks()
+    {
+        return new List<Book>(books);
+    }
+}
+
